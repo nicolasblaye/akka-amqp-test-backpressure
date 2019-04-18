@@ -1,0 +1,22 @@
+version: '2.1'
+
+services:
+  rabbit-server:
+    image: "rabbitmq:3.7-management"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 15s
+      retries: 5
+    volumes:
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./definitions.json:/etc/rabbitmq/definitions.json:ro
+
+  producer:
+    image: "producer-test"
+    depends_on:
+      rabbit-server:
+        condition: service_healthy
